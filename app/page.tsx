@@ -2,10 +2,10 @@
 
 import { useState, FormEvent } from 'react'
 
-// ─── Replace with your Formspree form ID ───
-// Sign up at https://formspree.io, create a form, and paste the ID here.
-const FORMSPREE_ID = 'YOUR_FORM_ID'
-const FORMSPREE_URL = `https://formspree.io/f/${FORMSPREE_ID}`
+// Google Form "Cobilion Whitelist" — required Email field entry.569180788
+const GOOGLE_FORM_ACTION =
+  'https://docs.google.com/forms/d/e/1FAIpQLSdMZOduQQ_5k6GdXlEF7Tb4NC3omjdGkDMfg2w_FEsiGO7CQw/formResponse'
+const GOOGLE_FORM_EMAIL_ENTRY = 'entry.569180788'
 
 // ─── Reusable waitlist form ─────────────────
 function WaitlistForm({ id, btnLabel }: { id: string; btnLabel: string }) {
@@ -16,12 +16,14 @@ function WaitlistForm({ id, btnLabel }: { id: string; btnLabel: string }) {
     e.preventDefault()
     setStatus('loading')
     try {
-      const res = await fetch(FORMSPREE_URL, {
+      // Google Forms does not return a readable CORS response; no-cors yields an opaque success.
+      await fetch(GOOGLE_FORM_ACTION, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ email }),
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ [GOOGLE_FORM_EMAIL_ENTRY]: email }),
       })
-      setStatus(res.ok ? 'ok' : 'error')
+      setStatus('ok')
     } catch {
       setStatus('error')
     }
